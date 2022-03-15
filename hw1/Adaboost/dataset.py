@@ -1,6 +1,5 @@
 import os
 import cv2
-import numpy as np
 
 def loadImages(dataPath):
     """
@@ -20,20 +19,17 @@ def loadImages(dataPath):
 
     for foldername in os.listdir(dataPath):
       if(foldername == "car"):
-        np_label = np.array([1])
+        label = 1
       elif(foldername == "non-car"):
-        np_label = np.array([0])
+        label = 0
 
       for filename in os.listdir(os.path.join(dataPath, foldername)):
-          img = cv2.imread(os.path.join(dataPath, foldername, filename))
-          if img is not None:
-            height, width, channel = img.shape
-            np_shape = np.array([height, width])
-            np_img = np.array(img)
-            np_data = np.array([np_img, np_shape, np_label], dtype=object)
-            dataset.append(np_data)
-            # print(np_data)
-
+          img = cv2.imread(os.path.join(dataPath, foldername, filename), 0)
+          img = cv2.resize(img, (36, 16))
+          tp_data = tuple()
+          tp_data = (img, label)
+          dataset.append(tp_data)
+    
     # End your code (Part 1)
     
     return dataset
