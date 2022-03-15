@@ -14,6 +14,7 @@ def loadImages(dataPath):
     """
     # Begin your code (Part 1)
     # raise NotImplementedError("To be implemented")
+    #
 
     dataset = []
 
