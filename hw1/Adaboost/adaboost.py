@@ -7,7 +7,7 @@ from sklearn.feature_selection import SelectPercentile, f_classif
 import pickle
 
 class Adaboost:
-    def __init__(self, T = 10):
+    def __init__(self, T = 9):
         """
           Parameters:
             T: The number of weak classifiers which should be used.
@@ -198,11 +198,9 @@ class Adaboost:
         for clf in classifiers:
             error = 0
 
-            label_i = 0
-            for data, w in zip(iis, weights):
-                correctness = abs(clf.classify(data) - label[label_i])
+            for data, label_i, w in zip(iis, labels, weights):
+                correctness = abs(clf.classify(data) - label_i)
                 error += w * correctness
-                label_i += 1
 
             error = error / len(iis)
             if error < bestError:
