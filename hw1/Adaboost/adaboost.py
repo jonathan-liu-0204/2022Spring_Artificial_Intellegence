@@ -60,10 +60,12 @@ class Adaboost:
             clf, error = self.selectBest(featureVals, iis, labels, features, weights)
             #update weights
             accuracy = []
+
             for x, y in zip(iis, labels):
                 correctness = abs(clf.classify(x) - y)
                 accuracy.append(correctness)
             beta = error / (1.0 - error)
+
             for i in range(len(accuracy)):
                 weights[i] = weights[i] * (beta ** (1 - accuracy[i]))
             alpha = math.log(1.0/beta)
@@ -151,7 +153,60 @@ class Adaboost:
         # Begin your code (Part 2)
         # raise NotImplementedError("To be implemented")
 
+        #training the weak classifier
+
+        total_pos, total_neg = 0, 0
+        for w, label in zip(weights, labels):
+            if label == 1:
+                total_pos += w
+            else:
+                total_neg += w
         
+        classifiers = []
+        total_features = featureVals.shape[0]
+
+        for index, feature in enumerate(featureVals):
+            if len(classifiers) % 1000 == 0 and len(classifiers) != 0:
+                print("Trained %d classifiers out of %d" % (len(classifiers), total_features))
+
+            applied_feature = sorted(zip(weights, feature, labels), key=lambda x: x[1])
+
+            pos_seen, neg_seen = 0, 0
+            pos_weights, neg_weights = 0, 0
+            min_error, best_feature, best_threshold, best_polarity = float('inf'), None, None, None
+            
+            for w, f, label in applied_feature:
+                error = min(neg_weights + total_pos - pos_weights, pos_weights + total_neg - neg_weights)
+                if error < min_error:
+                    min_error = error
+                    best_feature = features[index]
+                    best_threshold = f
+                    best_polarity = 1 if pos_seen > neg_seen else -1
+
+                if label == 1:
+                    pos_seen += 1
+                    pos_weights += w
+                else:
+                    neg_seen += 1
+                    neg_weights += w
+            
+            clf = WeakClassifier(best_feature, best_threshold, best_polarity)
+            classifiers.append(clf)
+        
+        bestClf, bestError = None, float('inf')
+
+        for clf in classifiers:
+            error = 0
+
+            label_i = 0
+            for data, w in zip(iis, weights):
+                correctness = abs(clf.classify(data) - label[label_i])
+                error += w * correctness
+                label_i += 1
+
+            error = error / len(iis)
+            if error < bestError:
+                bestClf, bestError = clf, error
 
         # End your code (Part 2)
         return bestClf, bestError
