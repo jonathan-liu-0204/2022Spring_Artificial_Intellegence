@@ -7,7 +7,7 @@ from sklearn.feature_selection import SelectPercentile, f_classif
 import pickle
 
 class Adaboost:
-    def __init__(self, T = 8):
+    def __init__(self, T = 10):
         """
           Parameters:
             T: The number of weak classifiers which should be used.
