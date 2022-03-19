@@ -25,11 +25,11 @@ plt.show()
 # Part 3: Modify difference values at parameter T of the Adaboost algorithm.
 # And find better results. Please test value 1~10 at least.
 print('Start training your classifier')
-clf = adaboost.Adaboost(T=3)
+clf = adaboost.Adaboost(T=1)
 clf.train(trainData)
 
-clf.save('clf_300_1_03')
-clf = adaboost.Adaboost.load('clf_300_1_03')
+clf.save('clf_300_1_01')
+clf = adaboost.Adaboost.load('clf_300_1_01')
 
 print('\nEvaluate your classifier with training dataset')
 utils.evaluate(clf, trainData)
