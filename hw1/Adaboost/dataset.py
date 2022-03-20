@@ -25,7 +25,7 @@ def loadImages(dataPath):
 
       for filename in os.listdir(os.path.join(dataPath, foldername)):
           img = cv2.imread(os.path.join(dataPath, foldername, filename), 0)
-          img = cv2.resize(img, (36, 16))
+          img = cv2.resize(img, (16, 36))
           tp_data = tuple()
           tp_data = (img, label)
           dataset.append(tp_data)
