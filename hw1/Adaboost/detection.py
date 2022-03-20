@@ -72,16 +72,11 @@ def detect(dataPath, clf):
         tmp = np.fromiter(tmp_object, dtype=np.int)
 
         cropped_frame = crop(tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5], tmp[6], tmp[7], frame)
-        cropped_frame = np.rot90(cropped_frame)
+        # cropped_frame = np.rot90(cropped_frame)
         cropped_frame = cv2.resize(cropped_frame, (36, 16))
         cropped_frame = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2GRAY)
-        # myTurtle = Turtle()
-        # myTurtle.right(90)
-
-        # print(cropped_image)
 
         classify_result = clf.classify(cropped_frame)
-        # print(classify_result)
 
         if classify_result == 1:
           print("Drawing")
