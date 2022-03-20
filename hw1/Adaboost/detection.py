@@ -8,7 +8,6 @@ from os import walk
 from os.path import join
 from datetime import datetime
 
-
 def crop(x1, y1, x2, y2, x3, y3, x4, y4, img) :
     """
     This function ouput the specified area (parking space image) of the input frame according to the input of four xy coordinates.
@@ -65,6 +64,8 @@ def detect(dataPath, clf):
     frames = []
     ret, frame = cap.read()
     cap.release()
+    
+    tmp_classify_result = []
 
     if ret:
       for i in range(int(lines[0])):
@@ -79,13 +80,26 @@ def detect(dataPath, clf):
         classify_result = clf.classify(cropped_frame)
 
         if classify_result == 1:
+          tmp_classify_result.append(1)
           print("Drawing")
           draw = np.array([[tmp[4], tmp[5]], [tmp[6], tmp[7]], [tmp[2], tmp[3]], [tmp[0], tmp[1]]])
           cv2.polylines(frame, [draw], True, (0,255,0), 2)
         else:
+          tmp_classify_result.append(0)
           continue
-      
+
+      file = open("Adaboost_pred.txt", "w+")
+      for i in range(len(tmp_classify_result)):
+        file.write(str(tmp_classify_result[i]))
+        if i != (len(tmp_classify_result)-1):
+          file.write(" ")
+
+      file.write("\n")
+      file.close()
+
+      frame = frame[:, :, [2,1,0]]
       plt.imshow(frame)
       plt.show()
+
     # raise NotImplementedError("To be implemented")
     # End your code (Part 4)
