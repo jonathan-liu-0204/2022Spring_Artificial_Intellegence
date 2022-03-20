@@ -63,6 +63,8 @@ def detect(dataPath, clf):
     cap = cv2.VideoCapture("data/detect/video.gif")
 
     now_at = 0
+    final_result = []
+
 
     while(cap.isOpened()):
       ret, frame = cap.read()
@@ -94,22 +96,22 @@ def detect(dataPath, clf):
           else:
             tmp_classify_result.append(0)
 
-        file = open("Adaboost_pred.txt", "w+")
-        for i in range(len(tmp_classify_result)):
-          file.write(str(tmp_classify_result[i]))
-          if i != (len(tmp_classify_result)-1):
-            file.write(" ")
-
-        file.write("\n")
-        file.close()
-
+        final_result.append(tmp_classify_result)
         if now_at == 1:
           frame = frame[:, :, [2,1,0]]
           plt.imshow(frame)
           plt.show()
-          
+
       else:
-        break;
+        file = open("Adaboost_pred.txt", "w+")
+        for frame_result in final_result:
+          for i in range(len(frame_result)):
+            file.write(str(frame_result[i]))
+            if i != (len(frame_result)-1):
+              file.write(" ")
+          file.write("\n")
+        file.close()
+        break
     
     cap.release()
 
