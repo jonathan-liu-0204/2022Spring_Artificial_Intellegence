@@ -190,8 +190,44 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         # Begin your code
-        util.raiseNotDefined()  
+        
+        pacman_legal_actions = gameState.getLegalActions(0) #all the legal actions of pacman.
+        max_value = float('-inf')
+        max_action  = None #one to be returned at the end.
+
+        for action in pacman_legal_actions:   #get the max value from all of it's successors.
+            action_value = self.Min_Value(gameState.getNextState(0, action), 1, 0)
+            if ((action_value) > max_value ): #take the max of all the children.
+                max_value = action_value
+                max_action = action
+
+        return max_action #Returns the final action .
+
         # End your code
+    
+    def Max_Value (self, gameState, depth):
+        """For the Max Player here Pacman"""
+
+        if ((depth == self.depth)  or (len(gameState.getLegalActions(0)) == 0)):
+            return self.evaluationFunction(gameState)
+
+        return max([self.Min_Value(gameState.getNextState(0, action), 1, depth) for action in gameState.getLegalActions(0)])
+
+
+    def Min_Value (self, gameState, agentIndex, depth):
+        """ For the MIN Players or Agents  """
+
+        num_actions = len(gameState.getLegalActions(agentIndex))
+
+        if (num_actions == 0): #No Legal actions.
+            return self.evaluationFunction(gameState)
+
+        if (agentIndex < gameState.getNumAgents() - 1):
+            return sum([self.Min_Value(gameState.getNextState(agentIndex, action), agentIndex + 1, depth) for action in gameState.getLegalActions(agentIndex)]) / float(num_actions)
+
+        else:  #the last ghost HERE
+            return sum([self.Max_Value(gameState.getNextState(agentIndex, action), depth + 1) for action in gameState.getLegalActions(agentIndex)]) / float(num_actions)
+
 
 def betterEvaluationFunction(currentGameState):
     """
