@@ -201,7 +201,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 max_value = action_value
                 max_action = action
 
-        return max_action #Returns the final action .
+        return max_action #Returns the final action .8
 
         # End your code
     
@@ -238,6 +238,41 @@ def betterEvaluationFunction(currentGameState):
     """
     "*** YOUR CODE HERE ***"
     # Begin your code
+
+    # Setup information to be used as arguments in evaluation function
+    pacman_position = currentGameState.getPacmanPosition()
+    ghost_positions = currentGameState.getGhostPositions()
+
+    food_list = currentGameState.getFood().asList()
+    food_count = len(food_list)
+    capsule_count = len(currentGameState.getCapsules())
+    closest_food = 1
+
+    game_score = currentGameState.getScore()
+
+    # Find distances from pacman to all food
+    food_distances = [manhattanDistance(pacman_position, food_position) for food_position in food_list]
+
+    # Set value for closest food if there is still food left
+    if food_count > 0:
+        closest_food = min(food_distances)
+
+    # Find distances from pacman to ghost(s)
+    for ghost_position in ghost_positions:
+        ghost_distance = manhattanDistance(pacman_position, ghost_position)
+
+        # If ghost is too close to pacman, prioritize escaping instead of eating the closest food
+        # by resetting the value for closest distance to food
+        if ghost_distance < 2:
+            closest_food = 99999
+
+    features = [1.0 / closest_food, game_score, food_count, capsule_count]
+
+    weights = [10, 200, -100, -10]
+
+    # Linear combination of features
+    return sum([feature * weight for feature, weight in zip(features, weights)])
+
     util.raiseNotDefined()
     # End your code
 
