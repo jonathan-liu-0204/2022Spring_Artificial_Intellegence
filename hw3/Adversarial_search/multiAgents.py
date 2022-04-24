@@ -131,49 +131,54 @@ class MinimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         # Begin your code
 
-        # get all the legal actions of pacman
         pacman_legal_actions = gameState.getLegalActions(0)
 
-        print()
-        print(pacman_legal_actions)
+        # print()
+        # print(pacman_legal_actions)
         
         max_value = float('-inf')
-        max_action  = None #one to be returned at the end.
+        decision  = None
 
-        for action in pacman_legal_actions:   #get the max value from all of it's successors.
-            action_value = self.Min_Value(gameState.getNextState(0, action), 1, 0)
-            print("action: ", action, "action_value: ", action_value)
-            if ((action_value) > max_value ): #take the max of all the children.
-                max_value = action_value
-                max_action = action
+        for action in pacman_legal_actions:
 
-        print("final_call", max_action)
-        return max_action #Returns the final action
+            action_score = self.Min_Value(gameState.getNextState(0, action), 1, 0)
+            # print("action: ", action, "action_score: ", action_score)
+
+            if ((action_score) > max_value ):
+                max_value = action_score
+                decision = action
+
+        # print("final_call", decision)
+        return decision
 
         util.raiseNotDefined()  
         # End your code
     
     def Max_Value (self, gameState, depth):
-        """For the Max Player here Pacman"""
 
-        if ((depth == self.depth)  or (len(gameState.getLegalActions(0)) == 0)):
+        # end of the game
+        if(depth == self.depth):
+            return self.evaluationFunction(gameState)
+        # dead
+        elif(len(gameState.getLegalActions(0)) == 0): 
             return self.evaluationFunction(gameState)
 
-        print("Max_Value Self Depth: ", self.depth)
+        # print("Max_Value Self Depth: ", self.depth)
 
         return max([self.Min_Value(gameState.getNextState(0, action), 1, depth) for action in gameState.getLegalActions(0)])
 
 
     def Min_Value (self, gameState, agentIndex, depth):
-        """ For the MIN Players or Agents  """
 
-        if (len(gameState.getLegalActions(agentIndex)) == 0): #No Legal actions.
+        # dead
+        if(len(gameState.getLegalActions(agentIndex)) == 0):
             return self.evaluationFunction(gameState)
 
-        if (agentIndex < gameState.getNumAgents() - 1):
+        # when the game continues
+        if(agentIndex < gameState.getNumAgents() - 1): 
             return min([self.Min_Value(gameState.getNextState(agentIndex, action), agentIndex + 1, depth) for action in gameState.getLegalActions(agentIndex)])
-
-        else:  #the last ghost HERE
+        # when the last ghost remaining
+        else: 
             return min([self.Max_Value(gameState.getNextState(agentIndex, action), depth + 1) for action in gameState.getLegalActions(agentIndex)])
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
@@ -191,41 +196,56 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         # Begin your code
         
-        pacman_legal_actions = gameState.getLegalActions(0) #all the legal actions of pacman.
+        pacman_legal_actions = gameState.getLegalActions(0)
+
+        # print()
+        # print(pacman_legal_actions)
+        
         max_value = float('-inf')
-        max_action  = None #one to be returned at the end.
+        decision  = None
 
-        for action in pacman_legal_actions:   #get the max value from all of it's successors.
-            action_value = self.Min_Value(gameState.getNextState(0, action), 1, 0)
-            if ((action_value) > max_value ): #take the max of all the children.
-                max_value = action_value
-                max_action = action
+        for action in pacman_legal_actions:
 
-        return max_action #Returns the final action .8
+            action_score = self.Min_Value(gameState.getNextState(0, action), 1, 0)
+            # print("action: ", action, "action_score: ", action_score)
 
+            if ((action_score) > max_value ):
+                max_value = action_score
+                decision = action
+
+        # print("final_call", decision)
+        return decision
+
+        util.raiseNotDefined()  
         # End your code
     
     def Max_Value (self, gameState, depth):
-        """For the Max Player here Pacman"""
 
-        if ((depth == self.depth)  or (len(gameState.getLegalActions(0)) == 0)):
+        # end of the game
+        if(depth == self.depth):
             return self.evaluationFunction(gameState)
+        # dead
+        elif(len(gameState.getLegalActions(0)) == 0): 
+            return self.evaluationFunction(gameState)
+
+        # print("Max_Value Self Depth: ", self.depth)
 
         return max([self.Min_Value(gameState.getNextState(0, action), 1, depth) for action in gameState.getLegalActions(0)])
 
 
     def Min_Value (self, gameState, agentIndex, depth):
-        """ For the MIN Players or Agents  """
 
         num_actions = len(gameState.getLegalActions(agentIndex))
 
-        if (num_actions == 0): #No Legal actions.
+        # dead
+        if(len(gameState.getLegalActions(agentIndex)) == 0):
             return self.evaluationFunction(gameState)
 
-        if (agentIndex < gameState.getNumAgents() - 1):
-            return sum([self.Min_Value(gameState.getNextState(agentIndex, action), agentIndex + 1, depth) for action in gameState.getLegalActions(agentIndex)]) / float(num_actions)
-
-        else:  #the last ghost HERE
+        # when the game continues
+        if(agentIndex < gameState.getNumAgents() - 1): 
+            return sum([self.Min_Value(gameState.getNextState(agentIndex, action), agentIndex + 1, depth) for action in gameState.getLegalActions(agentIndex)]) / float(num_actions)\
+        # when the last ghost remaining
+        else: 
             return sum([self.Max_Value(gameState.getNextState(agentIndex, action), depth + 1) for action in gameState.getLegalActions(agentIndex)]) / float(num_actions)
 
 
@@ -239,38 +259,45 @@ def betterEvaluationFunction(currentGameState):
     "*** YOUR CODE HERE ***"
     # Begin your code
 
-    # Setup information to be used as arguments in evaluation function
     pacman_position = currentGameState.getPacmanPosition()
     ghost_positions = currentGameState.getGhostPositions()
 
-    food_list = currentGameState.getFood().asList()
-    food_count = len(food_list)
-    capsule_count = len(currentGameState.getCapsules())
-    closest_food = 1
+    #number of remaining foods
+    food_num = len(food_place)
+    capsule_num = len(currentGameState.getCapsules())
+
+    # print()
+    # print(currentGameState.getCapsules())
 
     game_score = currentGameState.getScore()
 
-    # Find distances from pacman to all food
-    food_distances = [manhattanDistance(pacman_position, food_position) for food_position in food_list]
+    # ------ food area ------ 
+    # get the position of all food
+    food_place = currentGameState.getFood()
+    food_place = food_place.asList()
 
-    # Set value for closest food if there is still food left
-    if food_count > 0:
+    # print()
+    # print(food_place)
+
+    closest_food = 1
+    food_distances = [manhattanDistance(pacman_position, food_position) for food_position in food_place]
+    # print("food_distances: ", food_distances)
+
+    if food_num > 0:
         closest_food = min(food_distances)
 
-    # Find distances from pacman to ghost(s)
+    #distance of ghost to us
     for ghost_position in ghost_positions:
+
         ghost_distance = manhattanDistance(pacman_position, ghost_position)
 
-        # If ghost is too close to pacman, prioritize escaping instead of eating the closest food
-        # by resetting the value for closest distance to food
-        if ghost_distance < 2:
-            closest_food = 99999
+        # If ghost is too close to us, then its time to stop eating and escape lol
+        if ghost_distance < 5:
+            closest_food = 878787
 
-    features = [1.0 / closest_food, game_score, food_count, capsule_count]
-
+    #calculate all the weighted features and sum them up
+    features = [(1.0 / closest_food), game_score, food_num, capsule_num]
     weights = [10, 200, -100, -10]
-
-    # Linear combination of features
     return sum([feature * weight for feature, weight in zip(features, weights)])
 
     util.raiseNotDefined()
@@ -280,4 +307,4 @@ def betterEvaluationFunction(currentGameState):
 """
 If you complete this part, please replace scoreEvaluationFunction with betterEvaluationFunction ! !
 """
-better = scoreEvaluationFunction # betterEvaluationFunction or scoreEvaluationFunction
+better = betterEvaluationFunction # betterEvaluationFunction or scoreEvaluationFunction
