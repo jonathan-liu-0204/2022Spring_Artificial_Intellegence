@@ -165,7 +165,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         # print("Max_Value Self Depth: ", self.depth)
 
-        return max([self.Min_Value(gameState.getNextState(0, action), 1, depth) for action in gameState.getLegalActions(0)])
+        return max([self.Min_Value(gameState.getNextState(0, action), 1, depth) 
+                        for action in gameState.getLegalActions(0)])
 
 
     def Min_Value (self, gameState, agentIndex, depth):
@@ -176,10 +177,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         # when the game continues
         if(agentIndex < gameState.getNumAgents() - 1): 
-            return min([self.Min_Value(gameState.getNextState(agentIndex, action), agentIndex + 1, depth) for action in gameState.getLegalActions(agentIndex)])
+            return min([self.Min_Value(gameState.getNextState(agentIndex, action), agentIndex + 1, depth) 
+                            for action in gameState.getLegalActions(agentIndex)])
         # when the last ghost remaining
         else: 
-            return min([self.Max_Value(gameState.getNextState(agentIndex, action), depth + 1) for action in gameState.getLegalActions(agentIndex)])
+            return min([self.Max_Value(gameState.getNextState(agentIndex, action), depth + 1) 
+                            for action in gameState.getLegalActions(agentIndex)])
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
