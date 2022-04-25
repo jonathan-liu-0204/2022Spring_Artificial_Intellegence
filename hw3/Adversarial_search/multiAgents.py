@@ -268,8 +268,7 @@ def betterEvaluationFunction(currentGameState):
     pacman_position = currentGameState.getPacmanPosition()
     ghost_positions = currentGameState.getGhostPositions()
 
-    #number of remaining foods
-    food_num = len(food_place)
+    #number of remaining capsule
     capsule_num = len(currentGameState.getCapsules())
 
     # print()
@@ -281,6 +280,9 @@ def betterEvaluationFunction(currentGameState):
     # get the position of all food
     food_place = currentGameState.getFood()
     food_place = food_place.asList()
+
+    #number of remaining food
+    food_num = len(food_place)
 
     # print()
     # print(food_place)
