@@ -161,7 +161,8 @@ class QLearningAgent(ReinforcementAgent):
         if len(self.getLegalActions(nextState)) == 0:
             sample = reward
         else:
-            sample = reward + (self.discount * max([self.getQValue(nextState, next_action) for next_action in self.getLegalActions(nextState)]))
+            sample = reward + (self.discount * max([self.getQValue(nextState, next_action) 
+                                        for next_action in self.getLegalActions(nextState)]))
         
         second_part = self.alpha * sample
 
