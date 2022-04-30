@@ -68,6 +68,25 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
         # Begin your code
+
+        for state in self.mdp.getStates():
+            self.values[state] = float(0)
+        
+        for iteration in range(self.iterations):
+            next_values = self.values.copy()
+
+            for state in self.mdp.getStates():
+                state_values = util.Counter()
+
+                for action in self.mdp.getPossibleActions(state):
+                    state_values[action] = self.getQValue(state, action)
+
+                next_values[state] = state_values[state_values.argMax()]
+
+            self.values = next_values.copy()
+        
+        return self.values
+
         util.raiseNotDefined() 
         # End your code
 
@@ -86,6 +105,16 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         "*** YOUR CODE HERE ***"
         # Begin your code
+
+        transition_probs = self.mdp.getTransitionStatesAndProbs(state, action)
+        QValue = float(0)
+
+        for transition in transition_probs:
+            Tstate, prob = transition
+            QValue += prob * (self.mdp.getReward(state, action, Tstate) + self.discount * self.getValue(Tstate))
+
+        return QValue
+
         util.raiseNotDefined()  
         # End your code
 
@@ -102,6 +131,18 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Begin your code
 
         #check for terminal
+
+        if(self.mdp.isTerminal(state)):
+            return None
+        else:
+            QValues = util.Counter()
+            actions = self.mdp.getPossibleActions(state)
+
+            for action in actions:
+                QValues[action] = self.computeQValueFromValues(state, action)
+
+            return QValues.argMax()
+        
         util.raiseNotDefined() 
         # End your code
 
